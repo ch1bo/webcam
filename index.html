@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Webcam</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+   html, body {
+     height: 100%;
+     width: 100%;
+     display: flex;
+     justify-content: center;
+     margin: 0;
+     background: black;
+   }
+   video {
+     height: 100%;
+     width: 100%;
+   }
+  </style>
+</head>
+<body>
+  <video autoplay></video>
+</body>
+<script>
+  function queryParam(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (decodeURIComponent(pair[0]) == variable) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+  }
+  navigator.mediaDevices.enumerateDevices()
+  .then(function(devices) {
+    return devices.filter(function(d) {
+      return d.kind === "videoinput";
+    });
+  }).then(function(devices) {
+    console.log("available video devices", devices);
+    console.log("select via ?deviceIndex= or ?deviceId=");
+    var deviceIndex = queryParam("deviceIndex") || 0;
+    var deviceId = queryParam("deviceId");
+    if (!deviceId) {
+      deviceId = devices[deviceIndex].deviceId;
+    }
+    return navigator.mediaDevices.getUserMedia({
+      video: {
+        deviceId: deviceId,
+        width: 1920,
+        height: 1080
+      }
+    });
+  }).then(function(stream) {
+    console.log("loading stream", stream);
+    var video = document.querySelector("video");
+    video.srcObject = stream;
+  }, function(error) {
+    console.log(error);
+  });
+</script>
+</html>
