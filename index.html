@@ -49,8 +49,8 @@
     return navigator.mediaDevices.getUserMedia({
       video: {
         deviceId: deviceId,
-        width: 1920,
-        height: 1080
+        width: { min: 1920 },
+        height: { min: 1080 }
       }
     });
   }).then(function(stream) {
